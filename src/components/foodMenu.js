@@ -36,7 +36,7 @@ export default function Food ()
     
       const findFood = (e)=>{
         dispatch(getPosts({
-          query: e.target.value,from:1,to:5
+          query: query,from:1,to:5
         }))
       } 
     return <>

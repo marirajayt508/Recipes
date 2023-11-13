@@ -15,17 +15,29 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { useDispatch } from 'react-redux';
 import { getPosts } from '../redux/getBlogSlice';
 import { toast } from 'react-toastify';
+import { maxPage, options } from '../utils';
 
 export default function Foodlist({query,setQuery,findFood,saved,setSaved,setCurrent,handleClickOpen,Img})
 {
   const [page,setPage] = React.useState(1)
     const state = useSelector((state) => state)
     const diapatch = useDispatch();
-    const maxPage =10;
     const getPage =(pageNo)=>{
+      //To Make Pagination
       diapatch(getPosts({
   query: query, from : ((pageNo+1)*maxPage)-maxPage,to: (pageNo+1)*maxPage
 }))
+    }
+    const check = (res)=>{
+      if(saved.indexOf(res)==-1)
+      {
+        setSaved([...saved,res])
+        toast.success("Recipe Saved")
+      }
+      else
+      {
+        toast.error("Recipe is Already Saved")                
+      }
     }
     return <Paper className="m-3 p-3">
             <Typography className='fw-bold'>All Recipes</Typography>
@@ -37,7 +49,11 @@ export default function Foodlist({query,setQuery,findFood,saved,setSaved,setCurr
             }}/>
             <IconButton aria-label="search"  color="primary" onClick={()=>{
               findFood()
-            }}>
+            }} onEnter={
+              ()=>{
+                findFood()
+              }
+            }>
         <SearchIcon />
       </IconButton>
             </Box>
@@ -46,11 +62,11 @@ export default function Foodlist({query,setQuery,findFood,saved,setSaved,setCurr
               Food Type   <select class="form-select"  onChange={(value)=>{
                 findFood(value)
               }}>
-  <option>All</option>
-  <option value={`${query} Breakfast`}>Breakfast</option>
-  <option value={`${query} Brunch`}>Brunch</option>
-  <option value={`${query} Lunch`}>Lunch</option>
-  <option value={`${query} Dinner`}>Dinner</option>
+ {
+options.map((opt)=>{
+  return <option value={`${query+" "+opt}`}>{opt}</option>
+})
+ }
 </select>
               </Box>
             <br/>
@@ -96,15 +112,7 @@ export default function Foodlist({query,setQuery,findFood,saved,setSaved,setCurr
               handleClickOpen()
                 }}>View</Button>
             <Button className="text-success" onClick={()=>{
-              if(saved.indexOf(res)==-1)
-              {
-                setSaved([...saved,res])
-                toast.success("Recipe Saved")
-              }
-              else
-              {
-                toast.error("Recipe is Already Saved")                
-              }
+             check(res)
        }}>save</Button>
             </Grid>
           </Grid>
